@@ -1,0 +1,122 @@
+{% extends 'students/base.html' %}
+
+{% block content %}
+<h2>รายชื่อนักเรียนไม่สวมหมวกวันนี้</h2>
+
+{% if logs %}
+<div class="table-responsive">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h4>นักเรียนไม่สวมหมวกวันนี้</h4>
+        <a href="{% url 'daily_no_helmet_report' %}" class="btn btn-danger">
+            <i class="bi bi-file-earmark-pdf"></i> ดาวน์โหลด PDF รายวัน
+        </a>
+    </div>
+
+    <table id="noHelmetTable" class="table table-striped table-bordered">
+        <thead>
+            <tr>
+                <th>เวลา</th>
+                <th>รหัสนักเรียน</th>
+                <th>ชื่อ-สกุล</th>
+                <th>ระดับชั้น</th>
+                <th>แผนก</th>
+                <th>ครูประจำชั้น</th>
+                <th>รายงาน PDF</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for log in logs %}
+            <tr>
+                <td>{{ log.timestamp|date:"H:i:s" }}</td>
+
+                <td>
+                    {% if log.student %}
+                        {{ log.student.student_id }}
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+
+                <td>
+                    {% if log.student %}
+                        {{ log.student.full_name }}
+                    {% else %}
+                        ไม่ทราบชื่อ
+                    {% endif %}
+                </td>
+
+                <td>
+                    {% if log.student %}
+                        {{ log.student.level }}
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+
+                <td>
+                    {% if log.student %}
+                        {{ log.student.department }}
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+
+                <td>
+                    {% if log.student %}
+                        {{ log.student.teacher }}
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+
+                <td>
+                    {% if log.student %}
+                        <a href="{% url 'student_report' log.student.id %}" class="btn btn-sm btn-primary">
+                            PDF
+                        </a>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+</div>
+{% else %}
+<div class="alert alert-success">
+    วันนี้ไม่มีนักเรียนคนใดไม่สวมหมวก 🚀
+</div>
+{% endif %}
+
+<!-- DataTables -->
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+
+<script>
+$(document).ready(function () {
+    $('#noHelmetTable').DataTable({
+        "pageLength": 10,      // แสดง 10 รายการต่อหน้า
+        "lengthChange": false, // ปิด dropdown เลือกจำนวนหน้า
+        "ordering": true,
+        "order": [[0, "asc"]], // เรียงเวลา ascending
+        "language": {
+            "search": "ค้นหาชื่อ: ",
+            "paginate": {
+                "next": "ถัดไป",
+                "previous": "ก่อนหน้า"
+            },
+            "zeroRecords": "ไม่พบข้อมูล",
+            "info": "แสดง _START_ ถึง _END_ จาก _TOTAL_ รายการ",
+            "infoEmpty": "ไม่มีข้อมูล",
+            "infoFiltered": "(กรองจาก _MAX_ รายการทั้งหมด)"
+        },
+        "columnDefs": [
+            { "orderable": false, "targets": 6 }  
+        ]
+    });
+});
+</script>
+
+{% endblock %}

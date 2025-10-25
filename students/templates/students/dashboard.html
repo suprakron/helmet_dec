@@ -1,0 +1,134 @@
+{% extends 'students/base.html' %}
+
+{% block content %}
+<h2 class="mb-4 text-center fw-bold text-primary">📊 Dashboard ตรวจจับหมวกกันน็อก</h2>
+
+<div class="row fade-in">
+    <!-- ตารางนักเรียนทั้งหมด -->
+    <div class="col-md-6 mb-4">
+        <div class="card shadow border-0">
+            <div class="card-header text-white fw-semibold" style="background: linear-gradient(90deg, #0d6efd, #6610f2);">
+                👩‍🎓 นักเรียนทั้งหมด
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>รหัส</th>
+                                <th>ชื่อ-สกุล</th>
+                                <th>ระดับชั้น</th>
+                                <th>แผนก</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for student in students %}
+                            <tr>
+                                <td>{{ student.student_id }}</td>
+                                <td>{{ student.full_name }}</td>
+                                <td>{{ student.level }}</td>
+                                <td>{{ student.department }}</td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="4" class="text-center text-muted">ไม่มีข้อมูลนักเรียน</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- นักเรียนไม่สวมหมวก -->
+    <div class="col-md-6 mb-4">
+        <div class="card shadow border-0">
+            <div class="card-header text-white fw-semibold" style="background: linear-gradient(90deg, #dc3545, #ff5f6d);">
+                🚫 นักเรียนไม่สวมหมวกวันนี้
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-striped align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>เวลา</th>
+                                <th>ชื่อ</th>
+                                <th>รูป</th>
+                                <th>สถานะ</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for log in detection_logs %}
+                            <tr>
+                                <td>{{ log.timestamp|date:"H:i:s" }}</td>
+                                <td>
+                                    {% if log.student %}
+                                        {{ log.student.full_name }}
+                                    {% else %}
+                                        <span class="text-muted">ไม่ทราบชื่อ</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <img src="{{ log.image.url }}" class="rounded shadow-sm border" width="80" alt="ภาพตรวจจับ">
+                                </td>
+                                <td>
+                                    {% if log.helmet_detected %}
+                                        <span class="badge bg-success px-3 py-2">ใส่หมวก</span>
+                                    {% else %}
+                                        <span class="badge bg-danger px-3 py-2">ไม่สวมหมวก</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="4" class="text-center text-muted">ยังไม่มีข้อมูลการตรวจจับวันนี้</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="text-end">
+                    <a href="{% url 'generate_report' %}" class="btn btn-gradient mt-2">
+                        📄 ดาวน์โหลดรายงาน PDF
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .fade-in {
+        animation: fadeIn 0.6s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* ปุ่ม Gradient สวย ๆ */
+    .btn-gradient {
+        background: linear-gradient(90deg, #0d6efd, #6610f2);
+        border: none;
+        color: #fff;
+        font-weight: 500;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+    }
+
+    .btn-gradient:hover {
+        background: linear-gradient(90deg, #6610f2, #0d6efd);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+</style>
+{% endblock %}

@@ -1,0 +1,17 @@
+{% extends 'students/base.html' %}
+{% block content %}
+<h2 class="text-center mb-3">กล้องตรวจจับหมวกกันน็อคแบบ Real-Time</h2>
+
+<div class="text-center mb-4">
+  <img id="stream" src="{% url 'live_video' %}" width="640" height="480"
+       style="border-radius:10px; box-shadow:0 0 10px rgba(0,0,0,0.3);" />
+</div>
+
+<script>
+  const stream = document.getElementById("stream");
+  stream.onerror = () => {
+    console.log("Stream disconnected. Reconnecting...");
+    setTimeout(() => { stream.src = stream.src; }, 1000);
+  };
+</script>
+{% endblock %}

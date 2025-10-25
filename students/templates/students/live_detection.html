@@ -1,0 +1,54 @@
+{% extends 'students/base.html' %}
+
+{% block content %}
+<div class="container mt-4 fade-in">
+  <h2 class="text-center fw-bold mb-4">ตรวจจับแบบ Real-time 🛡️</h2>
+
+  <h4 class="mb-3">ผลการตรวจจับล่าสุด</h4>
+  <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
+    {% for log in logs %}
+    <div class="col">
+      <div class="card h-100 shadow-sm border-0 rounded-3 overflow-hidden">
+        <img src="{{ log.image.url }}" class="card-img-top" alt="Student Image" style="object-fit: cover; height: 180px;">
+        <div class="card-body text-center">
+          <p class="fw-semibold mb-1">{{ log.student.full_name|default:"ไม่ทราบชื่อ" }}</p>
+          <p class="mb-1">
+            {% if log.helmet_detected %}
+              <span class="badge bg-success px-3 py-2">✔️ ใส่หมวก</span>
+            {% else %}
+              <span class="badge bg-danger px-3 py-2">❌ ไม่สวมหมวก</span>
+            {% endif %}
+          </p>
+          <p class="text-muted small mb-0">{{ log.timestamp|date:"H:i:s" }}</p>
+        </div>
+      </div>
+    </div>
+    {% empty %}
+    <div class="col">
+      <div class="alert alert-info text-center">ยังไม่มีข้อมูลการตรวจจับวันนี้</div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+<style>
+.fade-in {
+    animation: fadeIn 0.6s ease-in-out;
+}
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+.card:hover {
+    transform: translateY(-3px);
+    transition: all 0.3s ease;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+}
+</style>
+
+<script>
+// Reload หน้าเพื่ออัปเดตแบบ real-time ทุก 10 วินาที
+setInterval(() => { location.reload(); }, 10000);
+</script>
+
+{% endblock %}

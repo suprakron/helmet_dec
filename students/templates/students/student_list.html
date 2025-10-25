@@ -1,0 +1,93 @@
+{% extends 'students/base.html' %}
+
+{% block content %}
+<h2 class="fw-bold text-primary mb-3 text-center">👩‍🎓 รายชื่อนักเรียนทั้งหมด</h2>
+
+<div class="fade-in">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <span class="fs-5 text-muted">จำนวนนักเรียนทั้งหมด: <strong>{{ students|length }}</strong> คน</span>
+        <a href="{% url 'student_create' %}" class="btn btn-gradient">➕ เพิ่มนักเรียน</a>
+    </div>
+
+    <div class="card shadow border-0">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                        <tr class="text-center">
+                            <th>รหัส</th>
+                            <th>ชื่อ</th>
+                            <th>ระดับชั้น</th>
+                            <th>แผนก</th>
+                            <th>รูป</th>
+                            <th>จัดการ</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for student in students %}
+                        <tr class="text-center">
+                            <td>{{ student.student_id }}</td>
+                            <td class="fw-semibold">{{ student.full_name }}</td>
+                            <td>{{ student.level }}</td>
+                            <td>{{ student.department }}</td>
+                            <td>
+                                {% if student.photo %}
+                                    <img src="{{ student.photo.url }}" class="rounded shadow-sm border" width="60" height="60" alt="รูปนักเรียน">
+                                {% else %}
+                                    <span class="text-muted">ไม่มีรูป</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="{% url 'student_edit' student.pk %}" class="btn btn-sm btn-outline-primary px-3">แก้ไข</a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" class="text-center text-muted py-3">ยังไม่มีข้อมูลนักเรียนในระบบ</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .fade-in {
+        animation: fadeIn 0.6s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .btn-gradient {
+        background: linear-gradient(90deg, #0d6efd, #6610f2);
+        border: none;
+        color: #fff;
+        font-weight: 500;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+        box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+    }
+
+    .btn-gradient:hover {
+        background: linear-gradient(90deg, #6610f2, #0d6efd);
+        transform: translateY(-2px);
+        box-shadow: 0 5px 14px rgba(0, 0, 0, 0.2);
+    }
+
+    .table img {
+        object-fit: cover;
+    }
+</style>
+{% endblock %}
